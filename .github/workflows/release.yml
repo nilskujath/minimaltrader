@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Bump version
+        id: version
+        run: |
+          VERSION=$(python scripts/bump_version.py)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Commit version bump
+        if: steps.version.outputs.version != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml
+          git commit -m "chore(release): v${{ steps.version.outputs.version }}"
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }} master
+
+      - name: Build and publish to PyPI
+        if: steps.version.outputs.version != ''
+        run: |
+          poetry build
+          poetry publish --username __token__ --password ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Create GitHub Release
+        if: steps.version.outputs.version != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
