@@ -11,9 +11,7 @@ class Events:
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class Event:
-        ts_event: pd.Timestamp = dataclasses.field(
-            default_factory=lambda: pd.Timestamp.now(tz="UTC")
-        )
+        ts_event: pd.Timestamp = dataclasses.field(default_factory=lambda: pd.Timestamp.now(tz="UTC"))
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class PoisonPill(Event):
@@ -50,9 +48,7 @@ class Consumer(abc.ABC):
 class EventBus:
 
     def __init__(self) -> None:
-        self._subscriptions: defaultdict[type[Events.Event], set[Consumer]] = (
-            defaultdict(set)
-        )
+        self._subscriptions: defaultdict[type[Events.Event], set[Consumer]] = defaultdict(set)
         self._consumers: set[Consumer] = set()
         self._lock: threading.Lock = threading.Lock()
 
