@@ -1,0 +1,3 @@
+# MinimalTrader
+
+Minimalist Trading Software
