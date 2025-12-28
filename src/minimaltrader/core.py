@@ -1,5 +1,6 @@
 import abc
 import dataclasses
+import enum
 import pandas as pd
 import queue
 import threading
@@ -7,11 +8,22 @@ import threading
 from collections import defaultdict
 
 
+class Models:
+
+    class BarPeriod(enum.Enum):
+        SECOND = 32
+        MINUTE = 33
+        HOUR = 34
+        DAY = 35
+
+
 class Events:
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class Event:
-        ts_event: pd.Timestamp = dataclasses.field(default_factory=lambda: pd.Timestamp.now(tz="UTC"))
+        ts_event: pd.Timestamp = dataclasses.field(
+            default_factory=lambda: pd.Timestamp.now(tz="UTC")
+        )
 
     @dataclasses.dataclass(kw_only=True, frozen=True)
     class PoisonPill(Event):
@@ -48,7 +60,9 @@ class Consumer(abc.ABC):
 class EventBus:
 
     def __init__(self) -> None:
-        self._subscriptions: defaultdict[type[Events.Event], set[Consumer]] = defaultdict(set)
+        self._subscriptions: defaultdict[type[Events.Event], set[Consumer]] = (
+            defaultdict(set)
+        )
         self._consumers: set[Consumer] = set()
         self._lock: threading.Lock = threading.Lock()
 
@@ -84,3 +98,21 @@ class Producer:
 
     def publish(self, event: Events.Event) -> None:
         self._event_bus.publish(event)
+
+
+class Datafeeds:
+
+    class Datafeed(Producer, abc.ABC):
+
+        def __init__(self, event_bus: EventBus) -> None:
+            super().__init__(event_bus)
+            self._is_connected: bool = False
+            self._watched_symbols: set[tuple[str, Models.BarPeriod]] = set()
+
+        @abc.abstractmethod
+        def watch(self, symbols: list[tuple[str, Models.BarPeriod]]) -> bool:
+            pass
+
+        @abc.abstractmethod
+        def unwatch(self, symbols: list[str]) -> None:
+            pass
