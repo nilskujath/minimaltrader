@@ -1,6 +1,6 @@
 [project]
 name = "minimaltrader"
-version = "0.6.0"
+version = "0.7.0"
 description = "Minimal Trading Software"
 authors = [
     {name = "Nils P. Kujath",email = "63961429+NilsKujath@users.noreply.github.com"}
