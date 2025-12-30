@@ -7,7 +7,6 @@ from .base import Broker
 
 
 class SimulatedBroker(Broker):
-
     commission_per_unit: float = 0.0
     minimum_commission_per_order: float = 0.0
 
@@ -59,6 +58,8 @@ class SimulatedBroker(Broker):
             if order.symbol != event.symbol:
                 continue
 
+            assert order.stop_price is not None  # guaranteed by order validation
+
             triggered = False
             match order.side:
                 case enums.OrderSide.BUY:
@@ -97,6 +98,8 @@ class SimulatedBroker(Broker):
             if order.symbol != event.symbol:
                 continue
 
+            assert order.stop_price is not None  # guaranteed by order validation
+
             triggered = False
             match order.side:
                 case enums.OrderSide.BUY:
@@ -115,6 +118,8 @@ class SimulatedBroker(Broker):
         for order_id, order in list(self._pending_limit_orders.items()):
             if order.symbol != event.symbol:
                 continue
+
+            assert order.limit_price is not None  # guaranteed by order validation
 
             triggered = False
             match order.side:
@@ -223,15 +228,26 @@ class SimulatedBroker(Broker):
         ):
             if order_id in pending_orders:
                 order = pending_orders[order_id]
-                updates = {}
-                if event.quantity is not None:
-                    updates["quantity"] = event.quantity
-                if event.limit_price is not None:
-                    updates["limit_price"] = event.limit_price
-                if event.stop_price is not None:
-                    updates["stop_price"] = event.stop_price
+                new_quantity = (
+                    event.quantity if event.quantity is not None else order.quantity
+                )
+                new_limit_price = (
+                    event.limit_price
+                    if event.limit_price is not None
+                    else order.limit_price
+                )
+                new_stop_price = (
+                    event.stop_price
+                    if event.stop_price is not None
+                    else order.stop_price
+                )
 
-                pending_orders[order_id] = dataclasses.replace(order, **updates)
+                pending_orders[order_id] = dataclasses.replace(
+                    order,
+                    quantity=new_quantity,
+                    limit_price=new_limit_price,
+                    stop_price=new_stop_price,
+                )
                 self.publish(events.AcceptedOrderModification(order_id=order_id))
                 return
 

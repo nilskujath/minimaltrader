@@ -5,7 +5,6 @@ from ..models import enums
 
 
 class Datafeed(Producer):
-
     def __init__(self, event_bus: EventBus) -> None:
         super().__init__(event_bus)
 
@@ -16,4 +15,3 @@ class Datafeed(Producer):
     @abc.abstractmethod
     def shutdown(self) -> None:
         pass
-

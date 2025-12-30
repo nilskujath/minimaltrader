@@ -3,13 +3,12 @@ import threading
 
 import pandas as pd
 
-from ..models import enums, events
 from ..core import EventBus
+from ..models import enums, events
 from .base import Datafeed
 
 
 class SimulatedDatafeed(Datafeed):
-
     def __init__(self, event_bus: EventBus, csv_path: str | pathlib.Path) -> None:
         super().__init__(event_bus)
         self._csv_path = pathlib.Path(csv_path)
@@ -86,4 +85,3 @@ class SimulatedDatafeed(Datafeed):
                     )
                 )
                 self._event_bus.wait_for_all_consumers_to_finish()
-

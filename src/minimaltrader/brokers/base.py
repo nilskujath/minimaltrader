@@ -5,7 +5,6 @@ from ..models import events
 
 
 class Broker(Consumer, Producer, abc.ABC):
-
     def __init__(self, event_bus: EventBus) -> None:
         Consumer.__init__(self)
         Producer.__init__(self, event_bus)
