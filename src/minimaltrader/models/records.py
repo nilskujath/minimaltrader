@@ -27,3 +27,11 @@ class FillRecord:
     price: float
     commission: float
     ts_event: pd.Timestamp
+
+
+@dataclasses.dataclass(kw_only=True)
+class Position:
+    symbol: str
+    quantity: float = 0.0
+    average_price: float = 0.0
+    realized_pnl: float = 0.0
