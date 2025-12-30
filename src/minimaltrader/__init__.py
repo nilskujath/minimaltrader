@@ -25,9 +25,10 @@ from .models.events import (
 from .models.records import OrderRecord, FillRecord
 
 # Components
-from .core import Datafeeds, Strategy
-from . import brokers
+from .core import Strategy
+from . import brokers, datafeeds
 from .brokers import Broker, SimulatedBroker
+from .datafeeds import Datafeed, SimulatedDatafeed
 
 # Indicators
 from .indicators.base import Indicator
@@ -64,7 +65,9 @@ __all__ = [
     "brokers",
     "Broker",
     "SimulatedBroker",
-    "Datafeeds",
+    "datafeeds",
+    "Datafeed",
+    "SimulatedDatafeed",
     "Strategy",
     # Indicators
     "Indicator",
