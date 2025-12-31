@@ -16,18 +16,22 @@ class SimpleMovingAverage(Indicator):
         super().__init__(max_history=max_history)
         self.period: int = max(1, int(period))
         self.input_source: enums.InputSource = input_source
-        self._window: collections.deque[float] = collections.deque(maxlen=self.period)
+        self._window: dict[str, collections.deque[float]] = {}
 
     @property
     def name(self) -> str:
         return f"SMA_{self.period}_{self.input_source.name}"
 
     def _compute_indicator(self, incoming_bar: events.ReceivedNewBar) -> float:
-        value: float = self._extract_input(incoming_bar)
-        self._window.append(value)
-        if len(self._window) < self.period:
+        symbol = incoming_bar.symbol
+        if symbol not in self._window:
+            self._window[symbol] = collections.deque(maxlen=self.period)
+        window = self._window[symbol]
+        value = self._extract_input(incoming_bar)
+        window.append(value)
+        if len(window) < self.period:
             return np.nan
-        return sum(self._window) / self.period
+        return sum(window) / self.period
 
     def _extract_input(self, incoming_bar: events.ReceivedNewBar) -> float:
         match self.input_source:

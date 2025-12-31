@@ -18,10 +18,11 @@ class EventBus:
         self._consumers: set[Consumer] = set()
         self._lock: threading.Lock = threading.Lock()
 
-    def subscribe(self, subscriber: Consumer, event_type: type[events.Event]):
+    def subscribe(self, subscriber: Consumer, *event_types: type[events.Event]):
         with self._lock:
             self._consumers.add(subscriber)
-            self._subscriptions[event_type].add(subscriber)
+            for event_type in event_types:
+                self._subscriptions[event_type].add(subscriber)
 
     def unsubscribe(self, subscriber: Consumer):
         with self._lock:

@@ -1,4 +1,4 @@
-from . import brokers, core, datafeeds, indicators, workbench
+from . import brokers, core, datafeeds, indicators, strategies, workbench
 from .models import enums, events, records
 
 __all__ = [
@@ -9,5 +9,6 @@ __all__ = [
     "events",
     "indicators",
     "records",
+    "strategies",
     "workbench",
 ]

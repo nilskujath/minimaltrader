@@ -30,7 +30,7 @@ class SimulatedBroker(Broker):
         self._process_market_orders(event)
         self._process_stop_orders(event)
         self._process_stop_limit_orders(event)
-        self._process_limit_orders(event)  # must process after stop limit orders
+        self._process_limit_orders(event)
 
     def _process_market_orders(self, event: events.ReceivedNewBar) -> None:
         for order_id, order in list(self._pending_market_orders.items()):
@@ -58,7 +58,7 @@ class SimulatedBroker(Broker):
             if order.symbol != event.symbol:
                 continue
 
-            assert order.stop_price is not None  # guaranteed by order validation
+            assert order.stop_price is not None
 
             triggered = False
             match order.side:
@@ -98,7 +98,7 @@ class SimulatedBroker(Broker):
             if order.symbol != event.symbol:
                 continue
 
-            assert order.stop_price is not None  # guaranteed by order validation
+            assert order.stop_price is not None
 
             triggered = False
             match order.side:
@@ -119,7 +119,7 @@ class SimulatedBroker(Broker):
             if order.symbol != event.symbol:
                 continue
 
-            assert order.limit_price is not None  # guaranteed by order validation
+            assert order.limit_price is not None
 
             triggered = False
             match order.side:

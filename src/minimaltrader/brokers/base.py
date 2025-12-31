@@ -8,9 +8,12 @@ class Broker(Consumer, Producer, abc.ABC):
     def __init__(self, event_bus: EventBus) -> None:
         Consumer.__init__(self)
         Producer.__init__(self, event_bus)
-        event_bus.subscribe(self, events.RequestOrderSubmission)
-        event_bus.subscribe(self, events.RequestOrderCancellation)
-        event_bus.subscribe(self, events.RequestOrderModification)
+        event_bus.subscribe(
+            self,
+            events.RequestOrderSubmission,
+            events.RequestOrderCancellation,
+            events.RequestOrderModification,
+        )
 
     def on_event(self, incoming_event: events.Event) -> None:
         match incoming_event:
