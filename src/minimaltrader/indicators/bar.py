@@ -3,6 +3,9 @@ from .base import Indicator
 
 
 class Open(Indicator):
+    def __init__(self, max_history: int = 100, plot_at: int = 99) -> None:
+        super().__init__(max_history=max_history, plot_at=plot_at)
+
     @property
     def name(self) -> str:
         return "OPEN"
@@ -12,6 +15,9 @@ class Open(Indicator):
 
 
 class High(Indicator):
+    def __init__(self, max_history: int = 100, plot_at: int = 99) -> None:
+        super().__init__(max_history=max_history, plot_at=plot_at)
+
     @property
     def name(self) -> str:
         return "HIGH"
@@ -21,6 +27,9 @@ class High(Indicator):
 
 
 class Low(Indicator):
+    def __init__(self, max_history: int = 100, plot_at: int = 99) -> None:
+        super().__init__(max_history=max_history, plot_at=plot_at)
+
     @property
     def name(self) -> str:
         return "LOW"
@@ -30,6 +39,9 @@ class Low(Indicator):
 
 
 class Close(Indicator):
+    def __init__(self, max_history: int = 100, plot_at: int = 99) -> None:
+        super().__init__(max_history=max_history, plot_at=plot_at)
+
     @property
     def name(self) -> str:
         return "CLOSE"
@@ -39,6 +51,9 @@ class Close(Indicator):
 
 
 class Volume(Indicator):
+    def __init__(self, max_history: int = 100, plot_at: int = 99) -> None:
+        super().__init__(max_history=max_history, plot_at=plot_at)
+
     @property
     def name(self) -> str:
         return "VOLUME"

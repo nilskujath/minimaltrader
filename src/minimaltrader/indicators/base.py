@@ -14,11 +14,12 @@ if TYPE_CHECKING:
 
 
 class Indicator(abc.ABC):
-    def __init__(self, max_history: int = 100) -> None:
+    def __init__(self, max_history: int = 100, plot_at: int = 99) -> None:
         self._lock = threading.Lock()
         self._max_history = max(1, int(max_history))
         self._history: dict[str, collections.deque[float]] = {}
         self._strategy: Strategy | None = None
+        self._plot_at = plot_at  # 0=main chart, 1-98=subcharts, 99=no plot
 
     @property
     @abc.abstractmethod
@@ -56,3 +57,7 @@ class Indicator(abc.ABC):
         with self._lock:
             h = self._current_history()
             return collections.deque(h, maxlen=self._max_history)
+
+    @property
+    def plot_at(self) -> int:
+        return self._plot_at

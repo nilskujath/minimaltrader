@@ -12,8 +12,9 @@ class SimpleMovingAverage(Indicator):
         period: int = 200,
         max_history: int = 100,
         input_source: enums.InputSource = enums.InputSource.CLOSE,
+        plot_at: int = 99,
     ) -> None:
-        super().__init__(max_history=max_history)
+        super().__init__(max_history=max_history, plot_at=plot_at)
         self.period: int = max(1, int(period))
         self.input_source: enums.InputSource = input_source
         self._window: dict[str, collections.deque[float]] = {}
