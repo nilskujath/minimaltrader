@@ -9,17 +9,19 @@ from .base import Datafeed
 
 
 class SimulatedDatafeed(Datafeed):
-    def __init__(self, event_bus: EventBus, csv_path: str | pathlib.Path) -> None:
+    csv_path: str = ""
+
+    def __init__(self, event_bus: EventBus) -> None:
         super().__init__(event_bus)
-        self._csv_path = pathlib.Path(csv_path)
         self._thread: threading.Thread | None = None
         self._stop_event = threading.Event()
 
     def stream(self, symbols: list[str], bar_period: enums.BarPeriod) -> None:
+        csv_path = pathlib.Path(self.csv_path)
         if self._thread and self._thread.is_alive():
             raise RuntimeError("Already streaming")
-        if not self._csv_path.exists():
-            raise FileNotFoundError(f"CSV file not found: {self._csv_path}")
+        if not csv_path.exists():
+            raise FileNotFoundError(f"CSV file not found: {csv_path}")
         if not symbols:
             raise ValueError("symbols list cannot be empty")
 
@@ -32,6 +34,10 @@ class SimulatedDatafeed(Datafeed):
         )
         self._thread.start()
 
+    def wait(self) -> None:
+        if self._thread:
+            self._thread.join()
+
     def shutdown(self) -> None:
         self._stop_event.set()
         if self._thread and self._thread.is_alive():
@@ -42,7 +48,7 @@ class SimulatedDatafeed(Datafeed):
         rtype = bar_period.value
 
         for chunk in pd.read_csv(
-            self._csv_path,
+            self.csv_path,
             usecols=[
                 "ts_event",
                 "rtype",

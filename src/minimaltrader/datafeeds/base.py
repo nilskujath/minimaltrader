@@ -13,5 +13,10 @@ class Datafeed(Producer):
         pass
 
     @abc.abstractmethod
+    def wait(self) -> None:
+        """Wait for the datafeed to finish streaming."""
+        pass
+
+    @abc.abstractmethod
     def shutdown(self) -> None:
         pass

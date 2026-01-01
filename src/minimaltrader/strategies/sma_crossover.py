@@ -1,22 +1,18 @@
-from ..core import EventBus
 from ..indicators import SimpleMovingAverage
 from ..models import enums, events
 from .base import Strategy
 
 
 class SMACrossover(Strategy):
-    def __init__(
-        self,
-        symbols: list[str],
-        event_bus: EventBus,
-        fast_period: int = 10,
-        slow_period: int = 30,
-        quantity: float = 1.0,
-    ) -> None:
-        super().__init__(symbols, event_bus)
-        self.fast = self.indicator(SimpleMovingAverage(period=fast_period))
-        self.slow = self.indicator(SimpleMovingAverage(period=slow_period))
-        self.quantity = quantity
+    symbols: list[str] = []
+    bar_period: enums.BarPeriod = enums.BarPeriod.MINUTE
+    fast_period: int = 10
+    slow_period: int = 30
+    quantity: float = 1.0
+
+    def setup(self) -> None:
+        self.fast = self.indicator(SimpleMovingAverage(period=self.fast_period))
+        self.slow = self.indicator(SimpleMovingAverage(period=self.slow_period))
 
     def on_bar(self, event: events.ReceivedNewBar) -> None:
         fast_val = self.fast.latest
