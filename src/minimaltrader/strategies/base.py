@@ -8,7 +8,10 @@ from ..models import enums, events, records
 
 
 class Strategy(Consumer, Producer, abc.ABC):
-    def __init__(self, symbols: list[str], event_bus: EventBus) -> None:
+    symbols: list[str] = []
+    bar_period: enums.BarPeriod = enums.BarPeriod.MINUTE
+
+    def __init__(self, event_bus: EventBus) -> None:
         Consumer.__init__(self)
         Producer.__init__(self, event_bus)
         event_bus.subscribe(
@@ -24,7 +27,6 @@ class Strategy(Consumer, Producer, abc.ABC):
             events.OrderExpired,
         )
 
-        self.symbols: list[str] = symbols
         self._current_symbol: str = ""
         self._indicators: list[Indicator] = []
 
@@ -43,6 +45,8 @@ class Strategy(Consumer, Producer, abc.ABC):
             close=self.indicator(Close()),
             volume=self.indicator(Volume()),
         )
+
+        self.setup()
 
     def indicator(self, ind: Indicator) -> Indicator:
         ind._strategy = self
@@ -248,6 +252,10 @@ class Strategy(Consumer, Producer, abc.ABC):
         self._pending_orders.pop(event.order_id, None)
 
     def shutdown(self) -> None:
+        self.incoming_event_queue.put(None)
+        self._thread.join()
+
+    def setup(self) -> None:
         pass
 
     @abc.abstractmethod
